@@ -1,0 +1,1395 @@
+{
+	"info": {
+		"name": "Prova Backend - API de Notícias",
+		"description": "Coleção completa de testes para API REST de gerenciamento de notícias",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3001",
+			"type": "string"
+		},
+		{
+			"key": "noticiaId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "01 - Criar Notícia",
+			"item": [
+				{
+					"name": "Criar notícia válida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Resposta contém ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.collectionVariables.set(\"noticiaId\", jsonData.id);",
+									"});",
+									"",
+									"pm.test(\"Dados foram salvos corretamente\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.titulo).to.eql(\"Notícia de Teste\");",
+									"    pm.expect(jsonData.descricao).to.eql(\"Esta é uma descrição de teste para a notícia\");",
+									"});",
+									"",
+									"pm.test(\"Timestamps foram criados\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('createdAt');",
+									"    pm.expect(jsonData).to.have.property('updatedAt');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Notícia de Teste\",\n  \"descricao\": \"Esta é uma descrição de teste para a notícia\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar notícia sem título (erro)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Mensagem de erro em português\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.be.an('array');",
+									"    pm.expect(JSON.stringify(jsonData.message)).to.include('título');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descricao\": \"Descrição sem título\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar notícia sem descrição (erro)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Mensagem de erro em português\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.be.an('array');",
+									"    pm.expect(JSON.stringify(jsonData.message)).to.include('descrição');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Título sem descrição\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar notícia com título muito longo (erro)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Mensagem de erro sobre tamanho máximo\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(JSON.stringify(jsonData.message)).to.include('200');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Este é um título extremamente longo que excede o limite de 200 caracteres permitidos pela validação do sistema e deve retornar um erro de validação informando que o título é muito longo para ser processado corretamente\",\n  \"descricao\": \"Descrição válida\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar notícia com campos extras (erro)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Rejeita propriedades não permitidas\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Notícia válida\",\n  \"descricao\": \"Descrição válida\",\n  \"campoExtra\": \"Este campo não deveria existir\",\n  \"outroCampo\": 123\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "02 - Listar Notícias",
+			"item": [
+				{
+					"name": "Listar todas (paginação padrão)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Estrutura de paginação correta\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData).to.have.property('total');",
+									"    pm.expect(jsonData).to.have.property('page');",
+									"    pm.expect(jsonData).to.have.property('limit');",
+									"    pm.expect(jsonData).to.have.property('totalPages');",
+									"});",
+									"",
+									"pm.test(\"Valores padrão de paginação\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.page).to.eql(1);",
+									"    pm.expect(jsonData.limit).to.eql(10);",
+									"});",
+									"",
+									"pm.test(\"Data é um array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar com paginação customizada",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Parâmetros de paginação aplicados\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.page).to.eql(2);",
+									"    pm.expect(jsonData.limit).to.eql(5);",
+									"});",
+									"",
+									"pm.test(\"Total de itens não excede o limite\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.length).to.be.at.most(5);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?page=2&limit=5",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar por termo no título",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resultados filtrados pela busca\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data.length > 0) {",
+									"        jsonData.data.forEach(function(item) {",
+									"            var searchTerm = 'teste';",
+									"            var found = item.titulo.toLowerCase().includes(searchTerm) || ",
+									"                       item.descricao.toLowerCase().includes(searchTerm);",
+									"            pm.expect(found).to.be.true;",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?search=teste",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "search",
+									"value": "teste"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar com termo que não existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Nenhum resultado encontrado\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array').that.is.empty;",
+									"    pm.expect(jsonData.total).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?search=termoqueNãoExiste123456",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "search",
+									"value": "termoqueNãoExiste123456"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Página inválida (menor que 1)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?page=0",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Limite acima do máximo (>100)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?limit=101",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "101"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "03 - Buscar Notícia por ID",
+			"item": [
+				{
+					"name": "Buscar por ID existente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Notícia contém todos os campos\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('titulo');",
+									"    pm.expect(jsonData).to.have.property('descricao');",
+									"    pm.expect(jsonData).to.have.property('createdAt');",
+									"    pm.expect(jsonData).to.have.property('updatedAt');",
+									"});",
+									"",
+									"pm.test(\"ID corresponde ao solicitado\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var requestedId = pm.collectionVariables.get('noticiaId');",
+									"    pm.expect(jsonData.id.toString()).to.eql(requestedId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar por ID inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Mensagem de erro apropriada\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/999999",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "999999"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar com ID inválido (texto)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400 ou 404\", function () {",
+									"    pm.expect([400, 404]).to.include(pm.response.code);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/abc",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "abc"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "04 - Atualizar Notícia",
+			"item": [
+				{
+					"name": "Atualizar título",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Título foi atualizado\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.titulo).to.eql(\"Título Atualizado\");",
+									"});",
+									"",
+									"pm.test(\"UpdatedAt foi modificado\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.updatedAt).to.not.eql(jsonData.createdAt);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Título Atualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar descrição",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Descrição foi atualizada\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.descricao).to.eql(\"Nova descrição atualizada\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descricao\": \"Nova descrição atualizada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar ambos os campos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Ambos os campos foram atualizados\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.titulo).to.eql(\"Título Completamente Novo\");",
+									"    pm.expect(jsonData.descricao).to.eql(\"Descrição completamente nova\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Título Completamente Novo\",\n  \"descricao\": \"Descrição completamente nova\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar notícia inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Título Novo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias/999999",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "999999"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar com título muito longo (erro)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Este é um título extremamente longo que excede o limite de 200 caracteres permitidos pela validação do sistema e deve retornar um erro de validação informando que o título é muito longo para ser processado corretamente\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar com corpo vazio (erro)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "05 - Deletar Notícia",
+			"item": [
+				{
+					"name": "Deletar notícia existente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Corpo da resposta está vazio\", function () {",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar se foi deletada (404)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Notícia não existe mais\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{noticiaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{noticiaId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar notícia inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/999999",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "999999"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "06 - Teste de Cache",
+			"item": [
+				{
+					"name": "Criar notícia para teste de cache",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"cacheTestId\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Notícia para Teste de Cache\",\n  \"descricao\": \"Esta notícia será usada para testar o cache\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Primeira requisição (sem cache)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resposta contém dados\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    pm.expect(jsonData.total).to.be.at.least(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Segunda requisição (deve usar cache)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resposta rápida (potencialmente do cache)\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(100);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar nova notícia (invalida cache)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Nova notícia que invalida cache\",\n  \"descricao\": \"Ao criar esta notícia, o cache deve ser invalidado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar cache invalidado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Total aumentou (cache foi invalidado)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.total).to.be.at.least(2);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "07 - Fluxo Completo",
+			"item": [
+				{
+					"name": "1. Criar múltiplas notícias",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"flowTestId\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Tecnologia: Novo Framework JavaScript\",\n  \"descricao\": \"Lançamento de framework revolucionário para desenvolvimento web\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Listar e verificar",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Notícia criada está na lista\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var flowTestId = pm.collectionVariables.get('flowTestId');",
+									"    var found = jsonData.data.some(item => item.id.toString() === flowTestId);",
+									"    pm.expect(found).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Buscar por termo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resultados contêm o termo buscado\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data.length > 0) {",
+									"        var allMatch = jsonData.data.every(item => ",
+									"            item.titulo.toLowerCase().includes('tecnologia') || ",
+									"            item.descricao.toLowerCase().includes('tecnologia')",
+									"        );",
+									"        pm.expect(allMatch).to.be.true;",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias?search=tecnologia",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias"],
+							"query": [
+								{
+									"key": "search",
+									"value": "tecnologia"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Buscar por ID específico",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Dados corretos da notícia\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.titulo).to.include('Tecnologia');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{flowTestId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{flowTestId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Atualizar notícia",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Notícia foi atualizada\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.titulo).to.eql('Tecnologia: Framework Atualizado');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Tecnologia: Framework Atualizado\",\n  \"descricao\": \"Framework recebe atualização importante com novas funcionalidades\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{flowTestId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{flowTestId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Verificar atualização",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Mudanças foram persistidas\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.titulo).to.include('Atualizado');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{flowTestId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{flowTestId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. Deletar notícia",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{flowTestId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{flowTestId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8. Confirmar deleção",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Notícia não existe mais\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.statusCode).to.eql(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/noticias/{{flowTestId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["noticias", "{{flowTestId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

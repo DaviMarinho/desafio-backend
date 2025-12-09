@@ -30,14 +30,14 @@ services:
     container_name: prova-backend-api
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - '3001:3001'
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres123
       DB_DATABASE: prova_db
-      PORT: 3000
+      PORT: 3001
       NODE_ENV: production
     depends_on:
       postgres:
