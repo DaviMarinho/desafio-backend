@@ -51,11 +51,11 @@ describe('main bootstrap', () => {
     );
   });
 
-  it('usa porta padrão 3000 quando PORT não definido', async () => {
+  it('usa porta padrão 3001 quando PORT não definido', async () => {
     delete process.env.PORT;
 
     await bootstrapFn();
 
-    expect(mockListen).toHaveBeenCalledWith(3000, '0.0.0.0');
+    expect(mockListen).toHaveBeenCalledWith(3001, '0.0.0.0');
   });
 });

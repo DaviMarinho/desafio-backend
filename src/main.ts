@@ -21,8 +21,13 @@ export async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  // Enable CORS
-  app.enableCors();
+  // Enable CORS with specific configuration
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   // Enable global validation pipe
   app.useGlobalPipes(
@@ -34,7 +39,7 @@ export async function bootstrap() {
   );
 
   // Start server on configured port
-  const port = process.env.PORT ?? 3000;
+  const port = process.env.PORT ?? 3001;
   await app.listen(port, '0.0.0.0'); // 0.0.0.0 for Docker compatibility
 
   console.log(`Application is running on: http://localhost:${port}`);

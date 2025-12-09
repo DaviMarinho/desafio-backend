@@ -55,7 +55,7 @@ DB_PASSWORD=postgres123
 DB_DATABASE=prova_db
 
 # Application Configuration
-PORT=3000
+PORT=3001
 NODE_ENV=development
 ```
 
@@ -76,7 +76,7 @@ npm run build
 npm run start:prod
 ```
 
-A API estará disponível em `http://localhost:3000`
+A API estará disponível em `http://localhost:3001`
 
 ### Opção 2: Execução com Docker (Recomendado)
 
@@ -94,7 +94,7 @@ docker compose down
 docker compose down -v
 ```
 
-A API estará disponível em `http://localhost:3000`
+A API estará disponível em `http://localhost:3001`
 O PostgreSQL estará disponível em `localhost:5432`
 
 ## Estrutura do Projeto
@@ -129,7 +129,7 @@ A estrutura segue o padrão de **arquitetura modular** do NestJS:
 
 ## API Endpoints
 
-### Base URL: `http://localhost:3000`
+### Base URL: `http://localhost:3001`
 
 ---
 
@@ -207,13 +207,13 @@ Lista todas as notícias com suporte a paginação e busca.
 
 ```bash
 # Listar todas (primeira página, 10 itens)
-curl http://localhost:3000/noticias
+curl http://localhost:3001/noticias
 
 # Página 2 com 5 itens
-curl "http://localhost:3000/noticias?page=2&limit=5"
+curl "http://localhost:3001/noticias?page=2&limit=5"
 
 # Buscar notícias com termo "tecnologia"
-curl "http://localhost:3000/noticias?search=tecnologia"
+curl "http://localhost:3001/noticias?search=tecnologia"
 ```
 
 ---
@@ -490,29 +490,29 @@ SELECT * FROM noticias;  # Ver todas as notícias
 
 ```bash
 # Criar notícia
-curl -X POST http://localhost:3000/noticias \
+curl -X POST http://localhost:3001/noticias \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Primeira notícia","descricao":"Esta é a primeira notícia de teste"}'
 
 # Listar notícias
-curl http://localhost:3000/noticias
+curl http://localhost:3001/noticias
 
 # Buscar por ID
-curl http://localhost:3000/noticias/1
+curl http://localhost:3001/noticias/1
 
 # Atualizar
-curl -X PATCH http://localhost:3000/noticias/1 \
+curl -X PATCH http://localhost:3001/noticias/1 \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Notícia Atualizada"}'
 
 # Deletar
-curl -X DELETE http://localhost:3000/noticias/1
+curl -X DELETE http://localhost:3001/noticias/1
 
 # Paginação
-curl "http://localhost:3000/noticias?page=1&limit=5"
+curl "http://localhost:3001/noticias?page=1&limit=5"
 
 # Busca
-curl "http://localhost:3000/noticias?search=primeira"
+curl "http://localhost:3001/noticias?search=primeira"
 ```
 
 ### Usando HTTP Client (VSCode REST Client, Postman, Insomnia)
