@@ -14,7 +14,7 @@ import {
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+export async function bootstrap() {
   // Create app with Fastify adapter
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -39,4 +39,7 @@ async function bootstrap() {
 
   console.log(`Application is running on: http://localhost:${port}`);
 }
-bootstrap();
+
+if (process.env.NODE_ENV !== 'test') {
+  bootstrap();
+}
