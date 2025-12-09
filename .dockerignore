@@ -1,0 +1,49 @@
+# Node
+node_modules
+npm-debug.log
+
+# Build
+dist
+build
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Tests
+coverage
+.nyc_output
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
