@@ -519,24 +519,11 @@ curl "http://localhost:3001/noticias?search=primeira"
 
 Importe a collection ou crie requests com os endpoints acima.
 
-## Melhorias Futuras
+```
 
-- [ ] Implementar autenticação e autorização (JWT)
-- [ ] Adicionar testes unitários e E2E completos
-- [ ] Implementar rate limiting para prevenir abuso
-- [ ] Adicionar documentação Swagger/OpenAPI
-- [ ] Implementar soft delete (deleção lógica)
-- [ ] Adicionar cache com Redis
-- [ ] Implementar logs estruturados (Winston, Pino)
-- [ ] Adicionar health check endpoint
-- [ ] Implementar migrations TypeORM
-- [ ] Adicionar CI/CD pipeline
-- [ ] Implementar upload de imagens para notícias
-- [ ] Adicionar categorias e tags para notícias
+postman-collection.json
 
-## Licença
-
-UNLICENSED
+```
 
 ---
 
